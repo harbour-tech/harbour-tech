@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="generator" content="Docusaurus v3.6.3">
 <title data-rh="true">Web Integration | Harbour Developer Portal</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:url" content="https://harbour-tech.github.io/docs/tech/web"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Web Integration | Harbour Developer Portal"><meta data-rh="true" name="description" content="Harbour provides a dev and a prod environment under the following URLs:"><meta data-rh="true" property="og:description" content="Harbour provides a dev and a prod environment under the following URLs:"><link data-rh="true" rel="icon" href="/img/favicon.png"><link data-rh="true" rel="canonical" href="https://harbour-tech.github.io/docs/tech/web"><link data-rh="true" rel="alternate" href="https://harbour-tech.github.io/docs/tech/web" hreflang="en"><link data-rh="true" rel="alternate" href="https://harbour-tech.github.io/docs/tech/web" hreflang="x-default"><link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Space+Grotesk:300,regular,500,600,700%7CAlbert+Sans:300,regular,500,600,700,900"><link rel="stylesheet" href="/assets/css/styles.85385beb.css">
-<script src="/assets/js/runtime~main.67bb3110.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.d03d66a9.js" defer="defer"></script>
 <script src="/assets/js/main.fd70b65c.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -40,12 +40,7 @@ resident and have a phone number in the country you sign up from. It can be used
 as the integration only requires implementing the redirect, and does not require signup up.</p>
 <p>As long as our web app does not display an error message, and offers to sign up the user, your dev team will know that
 the integration works and all URL parameters have been validated.</p>
-<p>Supported tokens:</p>
-<ul>
-<li>USDC on Ethereum Mainnet (<code>0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48</code>)</li>
-<li>USDC on Avalanche Mainnet C-Chain (<code>0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e</code>)</li>
-<li>USDC on Polygon Mainnet (<code>0x3c499c542cef5e3811e1192ce70d8cc03d5c3359</code>)</li>
-</ul>
+<p>Check our <a href="/docs/assets">supported assets</a> page.</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="how-it-works">How it works<a href="#how-it-works" class="hash-link" aria-label="Direct link to How it works" title="Direct link to How it works">​</a></h2>
 <p>The integrating app can choose whether it simply redirects the user to our web app, or also collects some initial
 information, such as whether the user wishes to buy or sell, which token, and which amount. Our app is made of three
@@ -53,18 +48,27 @@ steps: choose the token, choose an amount and get an estimated quote, and then p
 last step displays the bank payment instructions; when selling, the last step displays the crypto payment instructions
 and potentially a wallet integration to sign the transaction from a desktop browser.</p>
 <p>Should the app choose to collect that information from the user beforehand, it has the option of passing it in
-Harbour&#x27;s URL parameters, making it possible to skip the first step and show a price quote directly to the user.</p>
+Harbour&#x27;s URL parameters. Once the user is redirected to Harbour&#x27;s web app, our logic will detect the additional
+parameters and use them to skip steps already performed on your end and pre-fill data where applicable.</p>
 <p>The integrating app can also improve user experience by providing a digital signature, to prove ownership of the crypto
 address by the customer. Providing this signature beforehand will allow us to skip the part where a user has to connect
 their wallet and sign a payload from their browser wallet plugin. It also allows using Harbour from a mobile device,
 since browser extensions won&#x27;t be necessary.</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="price-quotes">Price quotes<a href="#price-quotes" class="hash-link" aria-label="Direct link to Price quotes" title="Direct link to Price quotes">​</a></h2>
-<p>If the integrating app wishes to provide a price quote to the user, typically when comparing Harbour with other ramp
-providers, they&#x27;ll have to integrate with our RPC API.</p>
-<p><code>TODO add API docs</code></p>
+<p>If the integrating app wishes to provide a price quote to the user, they can integrate our RPC API.</p>
+<p>Our docs have a whole section where we document usage of our buf API and TypeScript SDK which you
+can <a href="/docs/tech/sdk">check here</a>. Our API has several endpoints, some of which require a complex authentication mechanism.
+Fortunately, getting price quotes requires none of that complexity as the required API endpoints are all public, thus
+requiring no authentication.</p>
 <p>Harbour pricing works by calculating a fair mid-price of the asset being exchanged, across multiple exchanges of our
 choice. A service fee is deducted from the fiat portion, and the network fee (only when buying crypto) is deducted
 from the crypto portion.</p>
+<p>Our API returns a breakdown that can either be shown to the user on the integrating app&#x27;s UI to get an exact quote for
+buying or selling crypto, and a breakdown of the fees, or to compare our quote with other providers.</p>
+<p>In order to get a list of all supported assets and get a quote for a specific asset/amount, check out this section of
+our <a href="/docs/tech/sdk#anonymous-endpoints">SDK docs</a>. It can be easily tested with a curl command, and then you can decide
+whether you just want to write your own code that deals with a simple json request/response, or try embedding our SDK
+into your app.</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="redirect-specification">Redirect specification<a href="#redirect-specification" class="hash-link" aria-label="Direct link to Redirect specification" title="Direct link to Redirect specification">​</a></h2>
 <p>Except for the price quote, no further API integration is necessary and the only required step is to redirect the user
 to our web app. Note that:</p>
@@ -115,6 +119,7 @@ our redirect URL.</p>
 <li><a href="https://github.com/harbour-tech/harbour-ts-sdk/blob/main/src/examples/example-eth-new-api.ts" target="_blank" rel="noopener noreferrer">raw signing example</a></li>
 <li><a href="https://github.com/harbour-tech/harbour-ts-sdk/blob/main/src/examples/example-eth-new-api-personalsign.ts" target="_blank" rel="noopener noreferrer">personal message signing example</a></li>
 </ul>
+<p>Please note that all examples are based on version <code>6.x</code> of <code>ethers</code>, which might slightly differ from <code>5.x</code>.</p>
 <p>If you try running the script, you should get a bunch of console logs and a valid access token from our dev backend.
 Note that you don&#x27;t need to do this API integration yourself, it&#x27;s just a convenient way to showcase exactly how you
 can build a valid signature.</p>
